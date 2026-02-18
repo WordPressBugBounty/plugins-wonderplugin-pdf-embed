@@ -3,7 +3,7 @@
 Plugin Name: Wonder PDF Embed
 Plugin URI: https://www.wonderplugin.com/wordpress-pdf-embed/
 Description: Embed PDF to your WordPress website
-Version: 2.8
+Version: 2.9
 Author: Magic Hills Pty Ltd
 Author URI: https://www.wonderplugin.com
 */
@@ -65,49 +65,55 @@ class WonderPlugin_PDF_Plugin {
 		}
 
 		$params = array();
-		
-		$params[] = 'v=2';
+
+		$params['v'] = 2;
 
 		if ($settings['disabledownload'] == 1)
-			$params[] = 'disabledownload=1';
-		
+			$params['disabledownload'] = 1;
+
 		if ($settings['disableprint'] == 1)
-			$params[] = 'disableprint=1';
-		
+			$params['disableprint'] = 1;
+
 		if ($settings['disabletext'] == 1)
-			$params[] = 'disabletext=1';
-		
+			$params['disabletext'] = 1;
+
 		if ($settings['disabledoc'] == 1)
-			$params[] = 'disabledoc=1';
-		
+			$params['disabledoc'] = 1;
+
 		if ($settings['disableopenfile'] == 1)
-			$params[] = 'disableopenfile=1';
+			$params['disableopenfile'] = 1;
 
 		if ($settings['disabletoolbar'] == 1)
-			$params[] = 'disabletoolbar=1';
+			$params['disabletoolbar'] = 1;
 
 		if ($settings['disablerightclick'] == 1)
-			$params[] = 'disablerightclick=1';
+			$params['disablerightclick'] = 1;
 
-		if (isset($settings['externallinktarget']))
-		{
+		if (isset($settings['externallinktarget'])) {
 			$externallinktarget = intval($settings['externallinktarget']);
-			if ($externallinktarget > 0 && $externallinktarget <= 4)
-			{
-				$params[] = 'externallinktarget=' . $externallinktarget;
+			if ($externallinktarget > 0 && $externallinktarget <= 4) {
+				$params['externallinktarget'] = $externallinktarget;
 			}
 		}
 
 		if (!empty($settings['gaaccount']))
-		{
-			$params[] = 'gaaccount=' . esc_attr($settings['gaaccount']);
-		}
+			$params['gaaccount'] = $settings['gaaccount'];
 
-		$urlparams = implode("&", $params);
-		
+		if (!empty($settings['textselection']))
+			$params['textselection'] = $settings['textselection'];
+
+		if (!empty($settings['texthighlight']))
+			$params['texthighlight'] = $settings['texthighlight'];
+
+		if (!empty($settings['texthighlightselected']))
+			$params['texthighlightselected'] = $settings['texthighlightselected'];
+
+
+		$urlparams = http_build_query($params);
+
 		if (!empty($urlparams))
 			$engine .= '?' . $urlparams;
-		
+
 		return $engine;
 	}
 	
@@ -181,7 +187,15 @@ class WonderPlugin_PDF_Plugin {
 			<p><label><input name='disableopenfile' type='checkbox' id='disableopenfile' <?php echo ($settings['disableopenfile'] == 1) ? 'checked' : ''; ?> /> Hide the Open File button in the toolbar</label></p>
 			<p><label><input name='disabletoolbar' type='checkbox' id='disabletoolbar' <?php echo ($settings['disabletoolbar'] == 1) ? 'checked' : ''; ?> /> Hide the whole toolbar</label></p>
 			<p><label><input name='disablerightclick' type='checkbox' id='disablerightclick' <?php echo ($settings['disablerightclick'] == 1) ? 'checked' : ''; ?> /> Disable right click on the PDF viewer</label></p>
-			<p style="font-weight:bold;font-style:italic;margin-top:18px;">Please note: the above options only use CSS and JavaScript code to hide the relative menu items/buttons in the PDF.js viewer toolbar. It's NOT a DRM (Digital Rights Management) scheme to protect the PDF file. It does NOT stop experienced visitors from downloading, printing or copying text from the PDF file.</p>
+			<p style="font-weight:bold;font-style:italic;margin-top:18px;">Please note that the above options only use CSS and JavaScript code to hide the relevant menu items and buttons in the PDF.js viewer toolbar. They are not a DRM (Digital Rights Management) scheme to protect the PDF file. They do not prevent experienced users from downloading, printing, or copying text from the PDF file.</p>
+			</td>
+		</tr>
+		<tr>
+			<th>Text Selection and Highlight Colors</th>
+			<td>
+				<p>Text selection color: <input type="text" name="textselection" size=36 value="<?php echo isset($settings['textselection']) ? $settings['textselection'] : ''; ?>"></p>
+				<p>Text highlight color: <input type="text" name="texthighlight" size=36 value="<?php echo isset($settings['texthighlight']) ? $settings['texthighlight'] : ''; ?>"></p>
+				<p>Text highlight selected color: <input type="text" name="texthighlightselected" size=36 value="<?php echo isset($settings['texthighlightselected']) ? $settings['texthighlightselected'] : ''; ?>"></p>
 			</td>
 		</tr>
 		<tr>
@@ -194,7 +208,7 @@ class WonderPlugin_PDF_Plugin {
 				  <option value="3" <?php echo ($settings['externallinktarget'] == 3) ? 'selected="selected"' : ''; ?>>_parent</option>
 				  <option value="4" <?php echo ($settings['externallinktarget'] == 4) ? 'selected="selected"' : ''; ?>>_top</option>
 				</select>
-				<p style="font-weight:bold;font-style:italic;margin-top:18px;">Please note: this option only works with the new light color theme.</p>
+				<span style="font-weight:normal;font-style:italic;margin-top:18px;">The link target option only works with the default light color theme.</span>
 			</td>
 		</tr>
 		<tr>
@@ -232,7 +246,10 @@ class WonderPlugin_PDF_Plugin {
 			'disablerightclick' => get_option( 'wonderplugin_pdf_disablerightclick', 0 ),
 			'usedarktheme' => get_option( 'wonderplugin_pdf_usedarktheme', 0 ),
 			'externallinktarget' => get_option( 'wonderplugin_pdf_externallinktarget', 0 ),
-			'gaaccount' => get_option( 'wonderplugin_pdf_gaaccount', '' )
+			'gaaccount' => get_option( 'wonderplugin_pdf_gaaccount', '' ),
+			'textselection' => get_option( 'wonderplugin_pdf_textselection', '' ),
+			'texthighlight' => get_option( 'wonderplugin_pdf_texthighlight', '' ),
+			'texthighlightselected' => get_option( 'wonderplugin_pdf_texthighlightselected', '' )
 		);
 		
 		return $settings;
@@ -260,6 +277,9 @@ class WonderPlugin_PDF_Plugin {
 		}
 		update_option( 'wonderplugin_pdf_externallinktarget', $externallinktarget );
 		update_option( 'wonderplugin_pdf_gaaccount', (!isset($options) || !isset($options['gaaccount'])) ? '' : esc_attr(trim($options['gaaccount'])));
+		update_option( 'wonderplugin_pdf_textselection', (!isset($options) || !isset($options['textselection'])) ? '' : esc_attr(trim($options['textselection'])));
+		update_option( 'wonderplugin_pdf_texthighlight', (!isset($options) || !isset($options['texthighlight'])) ? '' : esc_attr(trim($options['texthighlight'])));
+		update_option( 'wonderplugin_pdf_texthighlightselected', (!isset($options) || !isset($options['texthighlightselected'])) ? '' : esc_attr(trim($options['texthighlightselected'])));
 	}
 }
 

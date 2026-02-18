@@ -3,7 +3,7 @@ Contributors: wonderplugin
 Tags: pdf embed, pdf viewer, responsive pdf embed, responsive pdf viewer, pdf lightbox
 Donate link: https://www.wonderplugin.com/wordpress-pdf-embed/
 Requires at least: 3.6
-Tested up to: 6.5.4
+Tested up to: 6.9.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -95,6 +95,9 @@ Please check your PDF URL and make sure it complies with the following requireme
 == Screenshots ==
 
 == Changelog ==
+
+= 2.9 =
+Support customizing the colors for text selection, text highlight, and selected text highlight
 
 = 2.8 =
 * Change the PDF.js option isEvalSupported to false
